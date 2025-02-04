@@ -30,6 +30,8 @@ services:
       MYSQL_PASSWORD: frankenize
     networks:
       - frankennet
+    ports:
+      - "10300:3306"
 
   frankenpma:
     container_name: frankenpma
@@ -40,7 +42,7 @@ services:
       PMA_USER: frankenize
       PMA_PASSWORD: frankenize
     ports:
-      - "10300:80"
+      - "10600:80"
     depends_on:
       - frankendbm
     networks:
