@@ -1,53 +1,47 @@
-version: "3.9"
 networks:
-  phrankennet:
+  frankennet:
     driver: bridge
 
 services:
-  fknapp:
-    image: dunglas/frankenphp:latest
-    container_name: laravel_app
-    ports:
-      - "8201:80"
+  frankenapp:
+    container_name: frankenapp
+    build: .
+    # restart: always
     volumes:
-      - ./laravel:/var/www/html
-      - ./laravel/storage/logs:/var/www/html/storage/logs
-    environment:
-      - FRANKENPHP_MODE=octane
-      - APP_ENV=local
-      - APP_DEBUG=true
-    depends_on:
-      - fkndb
-    networks:
-      - phrankennet
-
-  fkndb:
-    image: mariadb:latest
-    container_name: mariadb
+      - ./app:/app
     ports:
-      - "30601:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: pranksecret
-      MYSQL_DATABASE: prankdb
-      MYSQL_USER: prankuser
-      MYSQL_PASSWORD: pranky
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    networks:
-      - networkName: phrankennet
-
-  fkndbman:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin
-    ports:
-      - "18201:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: pranksecret
+      - "10800:80"
+      - "10400:443"
+      - "10400:443/udp"
+    tty: true
     depends_on:
-      - fkndb
+      - frankendbm
     networks:
-      - phrankennet
+      - frankennet
 
-volumes:
-  mariadb_data:
+  frankendbm:
+    container_name: frankendbm
+    image: mariadb
+    # restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: frankenize
+      MYSQL_DATABASE: frankendb
+      MYSQL_USER: frankenize
+      MYSQL_PASSWORD: frankenize
+    networks:
+      - frankennet
+
+  frankenpma:
+    container_name: frankenpma
+    image: phpmyadmin/phpmyadmin
+    # restart: always
+    environment:
+      PMA_HOST: frankendbm
+      PMA_USER: frankenize
+      PMA_PASSWORD: frankenize
+    ports:
+      - "10300:80"
+    depends_on:
+      - frankendbm
+    networks:
+      - frankennet
